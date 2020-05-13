@@ -5,29 +5,21 @@ import Data.Bifunctor
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 
-import Literal (Literal(..))
-#if MIN_VERSION_ghc(8,6,0)
+#if MIN_VERSION_ghc(8,11,0)
+import qualified GHC.Types.Literal as Literal
+#elif MIN_VERSION_ghc(8,6,0)
 import qualified Literal
 #endif
-import Var (Var)
-import qualified Var
-import Id (isFCallId)
-import Module (ModuleName, moduleNameFS, moduleName)
-import Unique (Unique, getUnique, unpkUnique)
-import Name (getOccName, occNameFS, OccName, getName, nameModule_maybe)
-import qualified IdInfo
-import qualified BasicTypes as OccInfo (OccInfo(..), isStrongLoopBreaker)
-#if MIN_VERSION_ghc(8,0,0)
+#if MIN_VERSION_ghc(8,11,0)
+import qualified GHC.Core.Stats as CoreStats
+#elif MIN_VERSION_ghc(8,0,0)
 import qualified CoreStats
 #else
 import qualified CoreUtils as CoreStats
 #endif
-import qualified CoreSyn
-import CoreSyn (Expr(..), CoreExpr, Bind(..), CoreAlt, CoreBind, AltCon(..))
-import HscTypes (ModGuts(..))
-import FastString (FastString)
-import qualified FastString
-#if MIN_VERSION_ghc(8,2,0)
+#if MIN_VERSION_ghc(8,11,0)
+import GHC.Core.TyCo.Rep as Type (Type(..))
+#elif MIN_VERSION_ghc(8,2,0)
 import TyCoRep as Type (Type(..))
 #elif MIN_VERSION_ghc(8,0,0)
 import TyCoRep as Type (Type(..), TyBinder(..))
@@ -37,10 +29,46 @@ import TypeRep as Type (Type(..))
 #if !(MIN_VERSION_ghc(8,2,0))
 import Type (splitFunTy_maybe)
 #endif
-import TyCon (TyCon, tyConUnique)
 
+#if MIN_VERSION_ghc(8,11,0)
+import GHC.Utils.Outputable (ppr, showSDoc, SDoc)
+import qualified GHC.Core.TyCon as TyCon
+import GHC.Core.TyCon (TyCon, tyConUnique)
+import GHC.Driver.Session (unsafeGlobalDynFlags)
+import GHC.Data.FastString (FastString, fastStringToByteString, bytesFS)
+import GHC.Driver.Types (ModGuts(..))
+import qualified GHC.Types.Basic as OccInfo (OccInfo(..), isStrongLoopBreaker)
+import qualified GHC.Types.Id.Info as IdInfo
+import GHC.Types.Name (getOccName, occNameFS, OccName, getName, nameModule_maybe)
+import GHC.Types.Unique (Unique, getUnique, unpkUnique)
+import GHC.Unit.Module.Name (ModuleName, moduleNameFS)
+import GHC.Unit.Types (moduleName)
+-- Some functions use Module.moduleName because AST also contains a moduleName function
+import qualified GHC.Unit.Types as Module
+import GHC.Types.Id (isFCallId)
+import GHC.Types.Var (Var)
+import qualified GHC.Types.Var as Var
+import GHC.Types.Literal (Literal(..))
+import qualified GHC.Core as CoreSyn
+import GHC.Core (Expr(..), CoreExpr, Bind(..), CoreAlt, CoreBind, AltCon(..))
+#else
 import Outputable (ppr, showSDoc, SDoc)
+import TyCon (TyCon, tyConUnique)
 import DynFlags (unsafeGlobalDynFlags)
+import FastString (FastString, fastStringToByteString, bytesFS)
+import HscTypes (ModGuts(..))
+import qualified BasicTypes as OccInfo (OccInfo(..), isStrongLoopBreaker)
+import qualified IdInfo
+import Name (getOccName, occNameFS, OccName, getName, nameModule_maybe)
+import Unique (Unique, getUnique, unpkUnique)
+import Module (ModuleName, moduleNameFS, moduleName)
+import Id (isFCallId)
+import Var (Var)
+import qualified Var
+import Literal (Literal(..))
+import qualified CoreSyn
+import CoreSyn (Expr(..), CoreExpr, Bind(..), CoreAlt, CoreBind, AltCon(..))
+#endif
 
 import GhcDump.Ast as Ast
 
@@ -58,7 +86,7 @@ fastStringToText = TE.decodeUtf8
 occNameToText :: OccName -> T.Text
 occNameToText = fastStringToText . occNameFS
 
-cvtUnique :: Unique.Unique -> Ast.Unique
+-- TODO cvtUnique :: Unique.Unique -> Ast.Unique
 cvtUnique u =
     let (a,b) = unpkUnique u
     in Ast.Unique a b
@@ -239,7 +267,7 @@ cvtModule phase guts =
     Ast.Module name (T.pack phase) (map cvtTopBind $ mg_binds guts)
   where name = cvtModuleName $ Module.moduleName $ mg_module guts
 
-cvtModuleName :: Module.ModuleName -> Ast.ModuleName
+-- TODO cvtModuleName :: Module.ModuleName -> Ast.ModuleName
 cvtModuleName = Ast.ModuleName . fastStringToText . moduleNameFS
 
 cvtType :: Type.Type -> Ast.SType

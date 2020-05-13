@@ -5,11 +5,21 @@ module GhcDump.Plugin where
 import Data.Maybe
 import qualified Data.ByteString.Lazy as BSL
 import qualified Codec.Serialise as Ser
+#if MIN_VERSION_ghc(8,11,0)
+import qualified GHC.Plugins as GhcPlugins
+import GHC.Plugins hiding (TB)
+#else
 import GhcPlugins hiding (TB)
+#endif
+
 #if !MIN_VERSION_ghc(8,8,0)
 import CoreMonad (pprPassDetails)
 #endif
+#if MIN_VERSION_ghc(8,11,0)
+import GHC.Utils.Error (showPass)
+#else
 import ErrUtils (showPass)
+#endif
 import Text.Printf
 import System.FilePath
 import System.Directory

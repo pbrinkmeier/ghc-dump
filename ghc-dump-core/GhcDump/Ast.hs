@@ -1,5 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE CPP #-}
 module GhcDump.Ast where
 
 import GHC.Generics
@@ -10,7 +11,11 @@ import qualified Data.ByteString as BS
 import Codec.Serialise
 import qualified Data.Text as T
 
+#if MIN_VERSION_ghc(8,11,0)
+import GHC.Types.Unique (mkUnique)
+#else
 import Unique (mkUnique)
+#endif
 import Prelude
 
 data Unique = Unique !Char !Int
