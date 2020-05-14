@@ -31,11 +31,18 @@ import Type (splitFunTy_maybe)
 #endif
 
 #if MIN_VERSION_ghc(8,11,0)
+import GHC.Data.FastString as FastString
+#elif MIN_VERSION_ghc(8,10,0)
+import qualified FastString
+#else
+import qualified FastString
+#endif
+
+#if MIN_VERSION_ghc(8,11,0)
 import GHC.Utils.Outputable (ppr, showSDoc, SDoc)
 import qualified GHC.Core.TyCon as TyCon
 import GHC.Core.TyCon (TyCon, tyConUnique)
 import GHC.Driver.Session (unsafeGlobalDynFlags)
-import GHC.Data.FastString (FastString, bytesFS)
 import GHC.Driver.Types (ModGuts(..))
 import qualified GHC.Types.Basic as OccInfo (OccInfo(..), isStrongLoopBreaker)
 import qualified GHC.Types.Id.Info as IdInfo
@@ -56,7 +63,6 @@ import GHC.Core (Expr(..), CoreExpr, Bind(..), CoreAlt, CoreBind, AltCon(..))
 import Outputable (ppr, showSDoc, SDoc)
 import TyCon (TyCon, tyConUnique)
 import DynFlags (unsafeGlobalDynFlags)
-import FastString (FastString, fastStringToByteString)
 import HscTypes (ModGuts(..))
 import qualified BasicTypes as OccInfo (OccInfo(..), isStrongLoopBreaker)
 import qualified IdInfo
@@ -76,7 +82,7 @@ import GhcDump.Ast as Ast
 cvtSDoc :: SDoc -> T.Text
 cvtSDoc = T.pack . showSDoc unsafeGlobalDynFlags
 
-fastStringToText :: FastString -> T.Text
+fastStringToText :: FastString.FastString -> T.Text
 fastStringToText = TE.decodeUtf8
 #if MIN_VERSION_ghc(8,10,0)
   . FastString.bytesFS
