@@ -35,7 +35,7 @@ import GHC.Utils.Outputable (ppr, showSDoc, SDoc)
 import qualified GHC.Core.TyCon as TyCon
 import GHC.Core.TyCon (TyCon, tyConUnique)
 import GHC.Driver.Session (unsafeGlobalDynFlags)
-import GHC.Data.FastString (FastString, fastStringToByteString, bytesFS)
+import GHC.Data.FastString (FastString, bytesFS)
 import GHC.Driver.Types (ModGuts(..))
 import qualified GHC.Types.Basic as OccInfo (OccInfo(..), isStrongLoopBreaker)
 import qualified GHC.Types.Id.Info as IdInfo
@@ -56,7 +56,7 @@ import GHC.Core (Expr(..), CoreExpr, Bind(..), CoreAlt, CoreBind, AltCon(..))
 import Outputable (ppr, showSDoc, SDoc)
 import TyCon (TyCon, tyConUnique)
 import DynFlags (unsafeGlobalDynFlags)
-import FastString (FastString, fastStringToByteString, bytesFS)
+import FastString (FastString, fastStringToByteString)
 import HscTypes (ModGuts(..))
 import qualified BasicTypes as OccInfo (OccInfo(..), isStrongLoopBreaker)
 import qualified IdInfo
