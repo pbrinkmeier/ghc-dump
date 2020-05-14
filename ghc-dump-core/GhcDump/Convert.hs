@@ -40,6 +40,7 @@ import GHC.Driver.Types (ModGuts(..))
 import qualified GHC.Types.Basic as OccInfo (OccInfo(..), isStrongLoopBreaker)
 import qualified GHC.Types.Id.Info as IdInfo
 import GHC.Types.Name (getOccName, occNameFS, OccName, getName, nameModule_maybe)
+import qualified GHC.Types.Unique as Unique
 import GHC.Types.Unique (Unique, getUnique, unpkUnique)
 import GHC.Unit.Module.Name (ModuleName, moduleNameFS)
 import GHC.Unit.Types (moduleName)
@@ -86,7 +87,7 @@ fastStringToText = TE.decodeUtf8
 occNameToText :: OccName -> T.Text
 occNameToText = fastStringToText . occNameFS
 
--- TODO cvtUnique :: Unique.Unique -> Ast.Unique
+cvtUnique :: Unique.Unique -> Ast.Unique
 cvtUnique u =
     let (a,b) = unpkUnique u
     in Ast.Unique a b
@@ -267,7 +268,11 @@ cvtModule phase guts =
     Ast.Module name (T.pack phase) (map cvtTopBind $ mg_binds guts)
   where name = cvtModuleName $ Module.moduleName $ mg_module guts
 
--- TODO cvtModuleName :: Module.ModuleName -> Ast.ModuleName
+#if MIN_VERSION_ghc(8,11,0)
+cvtModuleName :: GHC.Unit.Module.Name.ModuleName -> Ast.ModuleName
+#else
+cvtModuleName :: Module.ModuleName -> Ast.ModuleName
+#endif
 cvtModuleName = Ast.ModuleName . fastStringToText . moduleNameFS
 
 cvtType :: Type.Type -> Ast.SType
