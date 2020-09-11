@@ -94,6 +94,7 @@ pprIdInfo opts i d
             , "inline=" <> pretty (idiInlinePragma i)
             , "occ=" <> pretty (idiOccInfo i)
             , "str=" <> pretty (idiStrictnessSig i)
+            , "cpr=" <> pretty (idiCpr i)
             , "dmd=" <> pretty (idiDemandSig i)
             , "call-arity=" <> pretty (idiCallArity i)
             , "unfolding=" <> pprUnfolding opts (idiUnfolding i)

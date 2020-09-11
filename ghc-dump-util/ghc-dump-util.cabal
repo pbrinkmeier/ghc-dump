@@ -1,5 +1,5 @@
 name:                ghc-dump-util
-version:             0.1.1.0
+version:             0.2.0.0
 synopsis:            Handy tools for working with ghc-dump dumps
 description:
   @ghc-dump@ is a library, GHC plugin, and set of tools for recording and
@@ -29,7 +29,7 @@ library
   exposed-modules:     GhcDump.Repl, GhcDump.Util, GhcDump.Pretty, GhcDump.Reconstruct
   hs-source-dirs:      src
   build-depends:       base < 5.0,
-                       ghc-dump-core >=0.1 && <0.2,
+                       ghc-dump-core >=0.2 && <0.3,
                        bytestring >=0.10 && <0.11,
                        unordered-containers >= 0.2,
                        hashable >= 1.2,
@@ -41,7 +41,7 @@ library
 executable ghc-dump
   main-is:             Main.hs
   build-depends:       base < 5.0,
-                       ghc-dump-core >=0.1 && <0.2,
+                       ghc-dump-core >=0.2 && <0.3,
                        ghc-dump-util,
                        ansi-wl-pprint >= 0.6,
                        regex-tdfa >= 1.3.1.0,
