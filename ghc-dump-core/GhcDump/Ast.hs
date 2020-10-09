@@ -52,6 +52,7 @@ binderUniqueName (Bndr b) =
 
 data Binder' bndr var = Binder { binderName   :: !T.Text
                                , binderId     :: !BinderId
+                               , binderScope  :: IdScope
                                , binderIdInfo :: IdInfo bndr var
                                , binderIdDetails :: IdDetails
                                , binderType   :: Type' bndr var
@@ -76,6 +77,13 @@ data IdInfo bndr var
              }
     deriving (Eq, Ord, Generic, Show)
 instance (Serialise bndr, Serialise var) => Serialise (IdInfo bndr var)
+
+data IdScope
+    = GlobalId
+    | LocalIdX
+    | LocalId
+    deriving (Eq, Ord, Generic, Show)
+instance Serialise IdScope
 
 data Unfolding bndr var
     = NoUnfolding

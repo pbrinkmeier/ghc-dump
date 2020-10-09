@@ -106,6 +106,7 @@ cvtBinder v
   | Var.isId v =
     SBndr $ Binder { binderName   = occNameToText $ getOccName v
                    , binderId     = cvtVar v
+                   , binderScope  = cvtScope v
                    , binderIdInfo = cvtIdInfo $ Var.idInfo v
                    , binderIdDetails = cvtIdDetails $ Var.idDetails v
                    , binderType   = cvtType $ Var.varType v
@@ -115,6 +116,13 @@ cvtBinder v
                      , binderId     = cvtVar v
                      , binderKind   = cvtType $ Var.varType v
                      }
+
+-- Var.idScope isn't exported :(
+cvtScope :: Var -> Ast.IdScope
+cvtScope v
+  | Var.isGlobalId v   = GlobalId
+  | Var.isExportedId v = LocalIdX
+  | otherwise          = LocalId
 
 cvtIdInfo :: IdInfo.IdInfo -> Ast.IdInfo SBinder BinderId
 cvtIdInfo i =
@@ -134,10 +142,10 @@ cvtIdInfo i =
            , idiStrictnessSig = cvtSDoc $ ppr $ IdInfo.strictnessInfo i
            , idiDemandSig     = cvtSDoc $ ppr $ IdInfo.demandInfo i
            , idiCallArity     = IdInfo.callArityInfo i
-#if MIN_VERSION_ghc(8,11,0)
+#if MIN_VERSION_ghc(8,10,0)
            , idiCpr           = cvtSDoc $ ppr $ IdInfo.cprInfo i
 #else
-           , idiCpr           = ""
+           , idiCpr           = T.pack ""
 #endif
            }
 
